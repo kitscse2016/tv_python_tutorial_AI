@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Python Interpreter</title>
+
+<!-- RequireJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+
+<!-- Pyodide -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #f4f7fb;
+}
+
+/* ================= TOOLBAR ================= */
+.toolbar {
+    padding: 10px;
+    background: #1f3c88;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar button {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.home-btn {
+    background: #22c55e;
+    color: #000;
+}
+
+#status {
+    margin-left: auto;
+    font-size: 14px;
+}
+
+/* ================= EDITOR ================= */
+#editor {
+    height: 60vh;
+    border-bottom: 1px solid #ccc;
+}
+
+/* ================= OUTPUT ================= */
+pre {
+    background: #0f172a;
+    color: #e5e7eb;
+    margin: 0;
+    padding: 12px;
+    height: 30vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+    #editor {
+        height: 50vh;
+    }
+
+    pre {
+        height: 35vh;
+        font-size: 14px;
+    }
+
+    .toolbar {
+        justify-content: center;
+    }
+
+    #status {
+        width: 100%;
+        text-align: center;
+        margin-top: 6px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= TOOLBAR ================= -->
+<div class="toolbar">
+    <a href="/">
+        <button class="home-btn">🏠 AI Home</button>
+    </a>
+
+    <button id="runBtn" disabled>▶ Run</button>
+    <button id="downloadBtn" disabled>📤 Download</button>
+
+    <button id="fontIncBtn">A+</button>
+    <button id="fontDecBtn">A−</button>
+
+    <button id="themeBtn">🌙 Dark</button>
+
+    <span id="status">Loading editor & runtime…</span>
+</div>
+
+<!-- ================= EDITOR ================= -->
+<div id="editor"></div>
+
+<!-- ================= OUTPUT ================= -->
+<pre id="output">Initializing…</pre>
+
+<script>
+let editor = null;
+let pyodide = null;
+let editorReady = false;
+let pyodideReady = false;
+let currentTheme = "vs-dark";
+let fontSize = 14;
+
+const runBtn = document.getElementById("runBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const fontIncBtn = document.getElementById("fontIncBtn");
+const fontDecBtn = document.getElementById("fontDecBtn");
+const themeBtn = document.getElementById("themeBtn");
+const statusText = document.getElementById("status");
+const output = document.getElementById("output");
+
+function enableIfReady() {
+    if (editorReady && pyodideReady) {
+        runBtn.disabled = false;
+        downloadBtn.disabled = false;
+        statusText.textContent = "Ready";
+        output.textContent = "Ready.";
+        loadPastedCode();   // ✅ AUTO-PASTE CODE HERE
+    }
+}
+
+/* ================= PYODIDE ================= */
+(async () => {
+    pyodide = await loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
+    });
+    pyodideReady = true;
+    enableIfReady();
+})();
+
+/* ================= MONACO ================= */
+require.config({
+    paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" }
+});
+
+require(["vs/editor/editor.main"], () => {
+    editor = monaco.editor.create(document.getElementById("editor"), {
+        value: `print("Hello Python")`,
+        language: "python",
+        theme: currentTheme,
+        fontSize: fontSize,
+        automaticLayout: true
+    });
+
+    editor.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+        () => runCode()
+    );
+
+    editorReady = true;
+    enableIfReady();
+});
+
+/* ================= AUTO-PASTE FROM AI ================= */
+function loadPastedCode() {
+    const code = localStorage.getItem("run_code");
+    if (code && editor) {
+        editor.setValue(code);
+        localStorage.removeItem("run_code");
+    }
+}
+
+/* ================= RUN CODE ================= */
+async function runCode() {
+    output.textContent = "Running…";
+    const start = performance.now();
+
+    try {
+        pyodide.runPython(`
+import sys
+from io import StringIO
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+        `);
+
+        await pyodide.runPythonAsync(editor.getValue());
+
+        const stdout = pyodide.runPython("sys.stdout.getvalue()");
+        const stderr = pyodide.runPython("sys.stderr.getvalue()");
+        const end = performance.now();
+
+        output.textContent = stderr
+            ? "❌ Error:\n" + stderr
+            : (stdout || "Code executed successfully.");
+
+        output.textContent += `\n\n⏱ Execution Time: ${(end - start).toFixed(2)} ms`;
+
+    } catch (err) {
+        output.textContent = "❌ Runtime Error:\n" + err;
+    }
+}
+
+runBtn.onclick = runCode;
+
+/* ================= FONT ================= */
+fontIncBtn.onclick = () => {
+    if (fontSize < 30) {
+        fontSize++;
+        editor.updateOptions({ fontSize });
+    }
+};
+
+fontDecBtn.onclick = () => {
+    if (fontSize > 10) {
+        fontSize--;
+        editor.updateOptions({ fontSize });
+    }
+};
+/* ================= DOWNLOAD ================= */
+downloadBtn.onclick = () => {
+
+    const now = new Date();
+
+    const formattedDateTime = now.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+
+    const header = `"""
+File    : python_practice.py
+Author  : Nagraj | Trainer
+Purpose : Python practice file for learning and revision
+Created : ${formattedDateTime} (IST)
+"""
+
+`;
+
+    const pythonCode = header + editor.getValue();
+
+    const blob = new Blob([pythonCode], {
+        type: "text/x-python;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "python_practice.py";
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+};
+
+/* ================= THEME ================= */
+themeBtn.onclick = () => {
+    currentTheme = currentTheme === "vs-dark" ? "vs" : "vs-dark";
+    monaco.editor.setTheme(currentTheme);
+    themeBtn.textContent = currentTheme === "vs-dark" ? "🌙 Dark" : "☀ Light";
+};
+</script>
+
+</body>
+</html>

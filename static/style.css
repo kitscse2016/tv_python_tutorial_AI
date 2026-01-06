@@ -1,0 +1,150 @@
+/* =========================
+   GLOBAL STYLES
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #eef2f7, #dfe7f1);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+.container {
+    width: 90%;
+    max-width: 900px;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1f3c88;
+}
+
+.header p {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* =========================
+   FORM
+========================= */
+form {
+    margin-top: 15px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #cfd8e3;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+textarea:focus {
+    border-color: #1f3c88;
+    box-shadow: 0 0 0 3px rgba(31, 60, 136, 0.15);
+}
+
+/* =========================
+   BUTTON
+========================= */
+button {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #1f3c88, #274ecf);
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(39, 78, 207, 0.35);
+}
+
+/* =========================
+   RESPONSE BOX
+========================= */
+.response-box {
+    margin-top: 25px;
+    background: #f6f9ff;
+    border-left: 5px solid #1f3c88;
+    padding: 18px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* =========================
+   CODE BLOCKS
+========================= */
+.response-box code {
+    display: block;
+    background: #0f172a;
+    color: #e5e7eb;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    overflow-x: auto;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 14px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 22px;
+    }
+
+    button {
+        width: 100%;
+    }
+}

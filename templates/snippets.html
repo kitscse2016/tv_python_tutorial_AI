@@ -1,0 +1,9 @@
+<h2>Saved Code Snippets</h2>
+<ul>
+{% for s in snippets %}
+    <li>
+        <pre>{{ s[1] }}</pre>
+        <small>{{ s[2] }}</small>
+    </li>
+{% endfor %}
+</ul>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nagaraj AI Tutor | Python Learning Assistant</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Segoe UI",system-ui,sans-serif;
+    background:linear-gradient(180deg,#f8fafc,#eef2ff);
+    color:#0f172a;
+    scroll-behavior:smooth;
+}
+
+/* ================= NAVBAR ================= */
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#0f172a;
+    padding:14px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.brand{
+    color:#fff;
+    font-size:20px;
+    font-weight:700;
+}
+.menu a{
+    color:#c7d2fe;
+    text-decoration:none;
+    margin-left:20px;
+    font-weight:600;
+    padding-bottom:4px;
+}
+.menu a.active{
+    color:#fff;
+    border-bottom:2px solid #38bdf8;
+}
+
+/* ================= CONTAINER ================= */
+.container{
+    max-width:1000px;
+    margin:36px auto;
+    background:#fff;
+    padding:32px;
+    border-radius:14px;
+    box-shadow:0 20px 40px rgba(15,23,42,0.08);
+}
+
+/* ================= HEADER ================= */
+.header h1{
+    margin:0;
+    color:#1e3a8a;
+    font-size:32px;
+}
+.header p{
+    margin-top:8px;
+    color:#475569;
+}
+
+/* ================= FORM ================= */
+textarea{
+    width:100%;
+    height:140px;
+    margin-top:22px;
+    padding:16px;
+    font-size:16px;
+    border-radius:10px;
+    border:1px solid #c7d2fe;
+    resize:vertical;
+}
+button{
+    margin-top:14px;
+    padding:12px 22px;
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+/* ================= OUTPUT ================= */
+.section-title{
+    margin-top:34px;
+    font-weight:800;
+    color:#1e3a8a;
+}
+.explanation-box{
+    background:#f1f5f9;
+    padding:22px;
+    border-radius:12px;
+    line-height:1.8;
+    white-space:pre-wrap;
+}
+.code-box{
+    background:#020617;
+    color:#e5e7eb;
+    padding:22px;
+    border-radius:12px;
+    font-family:Consolas,monospace;
+    font-size:15px;
+    line-height:1.65;
+    white-space:pre;
+    overflow-x:auto;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.copy-btn{
+    margin-top:12px;
+    background:#22c55e;
+    color:#022c22;
+    margin-right:8px;
+}
+.run-btn{
+    margin-top:12px;
+    background:#38bdf8;
+    color:#082f49;
+}
+
+/* ================= SECTIONS ================= */
+.section{
+    margin-top:70px;
+    padding-top:40px;
+}
+.section h2{
+    color:#1e3a8a;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+    margin-top:60px;
+    text-align:center;
+    color:#64748b;
+    font-size:14px;
+}
+
+/* ================= FLOATING WHATSAPP ================= */
+.whatsapp-float{
+    position:fixed;
+    bottom:22px;
+    right:22px;
+    width:56px;
+    height:56px;
+    background:#22c55e;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 20px rgba(34,197,94,0.4);
+    z-index:2000;
+}
+.whatsapp-float svg{
+    width:30px;
+    height:30px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:700px){
+    .navbar{flex-direction:column;align-items:flex-start;}
+    .menu{margin-top:10px;}
+    .menu a{margin-left:0;margin-right:16px;}
+    .container{margin:18px;padding:22px;}
+}
+
+
+
+
+
+/* ===== INFO CARDS ===== */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 50px;
+}
+
+.info-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    border-top: 5px solid #2563eb;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+}
+
+.info-card h2 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    color: #1e3a8a;
+    font-size: 22px;
+}
+
+.info-card .name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.info-card p {
+    margin: 8px 0;
+    color: #334155;
+    line-height: 1.75;
+}
+
+.info-card a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.info-card a:hover {
+    text-decoration: underline;
+}
+
+.contact-row {
+    margin-top: 10px;
+}
+
+.address {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #475569;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+    <div class="brand">Python AI Assistant</div>
+    <div class="menu">
+        <a href="#home" class="nav-link active">Home</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="/online-python" target="_blank">Online Python</a>
+    </div>
+</div>
+
+<div class="container" id="home">
+
+    <div class="header">
+        <h1>Nagaraj AI Tutor</h1>
+        <p>Professional Python learning with clear explanations and executable examples</p>
+    </div>
+
+    <form method="post" action="/ask">
+        <textarea name="query" placeholder="Example: list, file handling, decorators..." required></textarea>
+        <button type="submit">Ask Assistant</button>
+    </form>
+
+    {% if response %}
+    {% set blocks = response.split("```python") %}
+
+    <div class="section-title">Explanation</div>
+    <div class="explanation-box">
+{{ blocks[0] }}
+    </div>
+
+    {% for block in blocks[1:] %}
+        {% set code = block.split("```")[0] %}
+        <div class="section-title">Python Code Example {{ loop.index }}</div>
+        <div class="code-box" id="codeBox{{ loop.index }}">
+{{ code }}
+        </div>
+        <button type="button" class="copy-btn"
+                onclick="copyCode('codeBox{{ loop.index }}')">Copy Code</button>
+        <button type="button" class="run-btn"
+                onclick="runInInterpreter('codeBox{{ loop.index }}')">▶ Run this code</button>
+    {% endfor %}
+    {% endif %}
+<!-- ================= ABOUT & CONTACT CARDS ================= -->
+<div class="info-grid">
+
+    <!-- ===== ABOUT CARD ===== -->
+    <div class="info-card" id="about">
+        <h2>About the Developer</h2>
+
+        <div class="name">Nagaraju Chekkilla</div>
+
+        <p>
+            Senior Technical Trainer, IT Consultant, and Project Mentor with over a decade of
+            experience in industry-focused training and real-world software development.
+        </p>
+
+        <p>
+            Developer and Lead Trainer at <strong>Truevolts Research Center Pvt. Ltd.</strong>,
+            Hyderabad, specializing in Python, Java, Web Technologies, AI/ML systems,
+            curriculum design, and corporate upskilling programs.
+        </p>
+    </div>
+
+    <!-- ===== CONTACT CARD ===== -->
+    <div class="info-card" id="contact">
+        <h2>Contact</h2>
+
+        <div class="contact-row">
+            <strong>Email:</strong>
+            <a href="mailto:nagarajchekkilla@gmail.com">
+                nagarajchekkilla@gmail.com
+            </a>
+        </div>
+
+        <div class="contact-row">
+            <strong>WhatsApp:</strong>
+            <a href="https://wa.me/919704887246" target="_blank">
+                +91 97048 87246
+            </a>
+        </div>
+
+        <div class="contact-row address">
+            <strong>Location:</strong><br>
+            Flat No: A6, 2nd Floor,<br>
+            RS Brothers, Eureka Court Complex,<br>
+            Lane above KS Bakery, Opp. Pratap Nagar,<br>
+            Nagarjuna Nagar Colony, Ameerpet,<br>
+            Hyderabad, Telangana – 500073
+        </div>
+    </div>
+
+</div>
+
+    <div class="footer">
+        © 2026 Python AI Assistant | Designed & Developed by Nagaraju Chekkilla
+    </div>
+</div>
+
+<!-- ================= FLOATING WHATSAPP ================= -->
+<a href="https://wa.me/919704887246" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+<svg viewBox="0 0 32 32" fill="white">
+<path d="M19.11 17.59c-.29-.15-1.72-.85-1.99-.95-.27-.1-.47-.15-.67.15-.2.29-.77.95-.95 1.15-.17.2-.35.22-.64.07-.29-.15-1.23-.45-2.35-1.44-.87-.77-1.46-1.72-1.63-2.01-.17-.29-.02-.45.13-.6.14-.14.29-.35.44-.52.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.19-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.29-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.11 3.23 5.11 4.53.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.72-.7 1.97-1.38.24-.68.24-1.27.17-1.38-.07-.12-.27-.2-.57-.35z"/>
+</svg>
+</a>
+
+<script>
+function copyCode(id){
+    const code=document.getElementById(id).textContent;
+    navigator.clipboard.writeText(code);
+    alert("Code copied");
+}
+
+function runInInterpreter(id){
+    const code=document.getElementById(id).textContent;
+    localStorage.setItem("run_code",code);
+    window.open("/online-python","_blank");
+}
+
+/* Active menu highlight */
+const sections=document.querySelectorAll(".section,#home");
+const links=document.querySelectorAll(".nav-link");
+window.addEventListener("scroll",()=>{
+    let current="home";
+    sections.forEach(sec=>{
+        if(window.scrollY>=sec.offsetTop-120){
+            current=sec.id;
+        }
+    });
+    links.forEach(link=>{
+        link.classList.remove("active");
+        if(link.getAttribute("href")==="#"+current){
+            link.classList.add("active");
+        }
+    });
+});
+</script>
+
+</body>
+</html>
