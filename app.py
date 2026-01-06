@@ -4,11 +4,12 @@ from flask import jsonify
 from app.db import init_db, get_db
 from flask import session
 import uuid
+import os
 init_db()
 app = Flask(__name__)
 
 
-app.secret_key = "a/slknflksdgndslkgndsok'lgn dsl,gndslkgnldskgndslkgn"  # change in production
+app.secret_key = os.getenv("SECRET_KEY")  # change in production
 
 @app.before_request
 def assign_user():
@@ -122,4 +123,4 @@ def delete_all_snippets():
     return jsonify({"status": "all deleted"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True)
