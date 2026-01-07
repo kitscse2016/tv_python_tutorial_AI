@@ -107,6 +107,29 @@ pre {
     <span id="status">Loading editor & runtime…</span>
 </div>
 
+<!-- ================= INPUT PANEL ================= -->
+<!-- ================= INPUT PANEL ================= -->
+<div style="padding:10px; background:#e8eefc; display:flex; gap:10px; flex-wrap:wrap;">
+    
+    <!-- Program Input -->
+    <textarea id="stdinInput"
+        rows="3"
+        placeholder="Enter each input on a new line"
+        style="flex:2; padding:8px; border-radius:6px; border:1px solid #cbd5e1; resize:vertical; font-family:inherit;"></textarea>
+
+    <!-- Command Line Arguments -->
+    <textarea id="argvInput"
+        rows="3"
+        placeholder="Enter command line arguments (space or new line separated)"
+        style="flex:1; padding:8px; border-radius:6px; border:1px solid #cbd5e1; resize:vertical; font-family:inherit;"></textarea>
+</div>
+
+<div style="font-size:13px; color:#475569; padding-left:12px; margin-bottom:6px;">
+    Input example:
+    <b>10 ↵ 20</b> <br>
+    Args example:
+    <b>5 6</b> or <b>5 ↵ 6</b>
+</div>
 <!-- ================= EDITOR ================= -->
 <div id="editor"></div>
 
@@ -185,16 +208,38 @@ async function runCode() {
     output.textContent = "Running…";
     const start = performance.now();
 
+    // Read inputs from UI
+    const stdinValue = document.getElementById("stdinInput").value || "";
+    const argvRaw     = document.getElementById("argvInput").value || "";
+
+    // Normalize arguments: convert newlines → spaces
+    const argvValue = argvRaw.replace(/\n/g, " ").trim();
+
     try {
+        // Inject data safely into Pyodide globals
+        pyodide.globals.set("STDIN_DATA", stdinValue);
+        pyodide.globals.set("ARGV_DATA", argvValue);
+
+        // Prepare Python runtime
         pyodide.runPython(`
 import sys
 from io import StringIO
+
+# Capture output
 sys.stdout = StringIO()
 sys.stderr = StringIO()
+
+# Inject stdin (supports multiline input)
+sys.stdin = StringIO(STDIN_DATA)
+
+# Inject command-line arguments
+sys.argv = ["program.py"] + ARGV_DATA.split() if ARGV_DATA.strip() else ["program.py"]
         `);
 
+        // Execute user code
         await pyodide.runPythonAsync(editor.getValue());
 
+        // Collect output
         const stdout = pyodide.runPython("sys.stdout.getvalue()");
         const stderr = pyodide.runPython("sys.stderr.getvalue()");
         const end = performance.now();
@@ -211,6 +256,7 @@ sys.stderr = StringIO()
 }
 
 runBtn.onclick = runCode;
+
 
 /* ================= FONT ================= */
 fontIncBtn.onclick = () => {
