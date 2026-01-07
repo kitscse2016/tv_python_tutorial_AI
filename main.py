@@ -5,7 +5,10 @@ from app.db import init_db, get_db
 from flask import session
 import uuid
 import os
+
+
 init_db()
+
 app = Flask(__name__)
 
 
